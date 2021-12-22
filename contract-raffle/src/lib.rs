@@ -9,7 +9,7 @@ use near_sdk::collections::UnorderedMap;
 use near_sdk::json_types::{ValidAccountId, U128};
 use near_sdk::PromiseOrValue;
 use near_sdk::{env, log, near_bindgen, AccountId, Balance, BorshStorageKey, PanicOnDefault};
-use std::convert::{AsRef, From};
+use std::str::FromStr;
 
 use internal::*;
 
@@ -19,19 +19,20 @@ enum StorageKey {
     Winning,
     Sold,
 }
-
+#[derive(Debug, PartialEq)]
 enum RaffleInstruction {
-    Unknown,
     BuyPrize,
     BuyTicket,
 }
 
-impl From<String> for RaffleInstruction {
-    fn from(item: String) -> Self {
-        match &item[..] {
-            "buy_ticket" => RaffleInstruction::BuyTicket,
-            "buy_prize" => RaffleInstruction::BuyPrize,
-            _ => RaffleInstruction::Unknown,
+impl FromStr for RaffleInstruction {
+    type Err = ();
+
+    fn from_str(input: &str) -> Result<RaffleInstruction, Self::Err> {
+        match input {
+            "buy_ticket" => Ok(RaffleInstruction::BuyTicket),
+            "buy_prize" => Ok(RaffleInstruction::BuyPrize),
+            _ => Err(()),
         }
     }
 }
@@ -43,7 +44,6 @@ pub struct RaffleContract {
     ticket: RaffleTicket,
     fungible_token_account_id: AccountId,
 }
-
 
 #[near_bindgen]
 impl RaffleContract {
@@ -60,16 +60,13 @@ impl RaffleContract {
         }
     }
 
-
-    pub fn total_tickets(&self)->u64{
-      self.ticket.total_available()
+    pub fn total_tickets(&self) -> u64 {
+        self.ticket.total_available()
     }
-    
     pub fn reset(&mut self) {
         self.ticket.reset();
     }
 }
-
 
 #[near_bindgen]
 impl FungibleTokenReceiver for RaffleContract {
@@ -93,7 +90,7 @@ impl FungibleTokenReceiver for RaffleContract {
             sender_id.as_ref(),
             msg
         );
-        match RaffleInstruction::from(msg) {
+        match msg.parse().unwrap() {
             RaffleInstruction::BuyTicket => {
                 let result = self.ticket.buy_ticket(sender_id.into(), amount.into());
                 match result {

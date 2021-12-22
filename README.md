@@ -5,9 +5,9 @@
 
 ## To deploy smart contracts
 ```bash
-./deploy.sh
+. ./deploy.sh
 ```
-
+> additional dot is required for running shell script in current session so that all required parameters will be set by script
 
 Alice trying to buy tickets, sending ft_transfer_call to prize ft contract:
 ```bash
@@ -33,7 +33,7 @@ near view $prize ft_balance_of '{"account_id": "'bob.$prize'"}'
 near view $raffle total_tickets 
 ```
 
-Reset: will recreate all tickets again:
+### Reset: will recreate all tickets:
 ```bash
 near call $raffle reset --accountId $raffle
 ```
