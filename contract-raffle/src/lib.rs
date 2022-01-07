@@ -15,7 +15,7 @@ pub(crate) fn assert_initialized() {
 }
 pub(crate) fn rand_range(from: i32, to: i32) -> i32 {
     let seed=env::random_seed();
-    let x: u32 = 123456789 ^ u32::from(seed[0]);
+    let x = 123456789 ^ u32::from(seed[0]);
     let m = (to - from + 1) as u32;
     let t = x ^ x.wrapping_shl(11);
     let mut w: u32 = 88675123;
