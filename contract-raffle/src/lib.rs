@@ -1,4 +1,3 @@
-mod internal;
 mod raffleticket;
 
 use crate::raffleticket::RaffleTicket;
@@ -11,7 +10,18 @@ use near_sdk::PromiseOrValue;
 use near_sdk::{env, log, near_bindgen, AccountId, Balance, BorshStorageKey, PanicOnDefault};
 use std::str::FromStr;
 
-use internal::*;
+pub(crate) fn assert_initialized() {
+    assert!(!env::state_exists(), "Already initialized");
+}
+pub(crate) fn rand_range(from: i32, to: i32) -> i32 {
+    let seed=env::random_seed();
+    let x: u32 = 123456789 ^ u32::from(seed[0]);
+    let m = (to - from + 1) as u32;
+    let t = x ^ x.wrapping_shl(11);
+    let mut w: u32 = 88675123;
+    w ^= w.wrapping_shr(19) ^ t ^ t.wrapping_shr(8);
+    return from + (w % m) as i32;
+}
 
 #[derive(BorshSerialize, BorshStorageKey)]
 enum StorageKey {
