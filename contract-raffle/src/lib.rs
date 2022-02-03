@@ -13,8 +13,10 @@ use std::str::FromStr;
 pub(crate) fn assert_initialized() {
     assert!(!env::state_exists(), "Already initialized");
 }
-pub(crate) fn rand_range(from: i32, to: i32) -> i32 {
-    let seed=env::random_seed();
+pub(crate) fn rand_range(from: i32, to: i32)->i32{
+    rand_range_from_seed(from,to,env::random_seed())
+}
+pub(crate) fn rand_range_from_seed(from: i32, to: i32,seed:Vec<u8>) -> i32 {
     let x = 123456789 ^ u32::from(seed[0]);
     let m = (to - from + 1) as u32;
     let t = x ^ x.wrapping_shl(11);

@@ -1,4 +1,5 @@
 #!/bin/bash
+./build.sh
 near dev-deploy res/prize.wasm
 source neardev/dev-account.env
 cat neardev/dev-account.env > .env
