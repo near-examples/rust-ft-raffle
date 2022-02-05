@@ -33,18 +33,18 @@ enum StorageKey {
     Sold,
 }
 #[derive(Debug, PartialEq)]
-enum RaffleInstruction {
+enum RaffleInteraction {
     BuyPrize,
     BuyTicket,
 }
 
-impl FromStr for RaffleInstruction {
+impl FromStr for RaffleInteraction {
     type Err = ();
 
-    fn from_str(input: &str) -> Result<RaffleInstruction, Self::Err> {
+    fn from_str(input: &str) -> Result<RaffleInteraction, Self::Err> {
         match input {
-            "buy_ticket" => Ok(RaffleInstruction::BuyTicket),
-            "buy_prize" => Ok(RaffleInstruction::BuyPrize),
+            "buy_ticket" => Ok(RaffleInteraction::BuyTicket),
+            "buy_prize" => Ok(RaffleInteraction::BuyPrize),
             _ => Err(()),
         }
     }
@@ -104,7 +104,7 @@ impl FungibleTokenReceiver for RaffleContract {
             msg
         );
         match msg.parse().unwrap() {
-            RaffleInstruction::BuyTicket => {
+            RaffleInteraction::BuyTicket => {
                 let result = self.ticket.buy_ticket(sender_id.into(), amount.into());
                 match result {
                     Ok(s) => PromiseOrValue::Value(s.into()),
